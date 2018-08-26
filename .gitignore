@@ -1,0 +1,4 @@
+*config.py
+templates/
+saved_images/
+__pycache__/

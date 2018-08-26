@@ -1,13 +1,15 @@
-import os, sys
+import sys
+import os
+import config
 from flask import Flask, request
-from pymessenger import Bot
+from pymessenger2 import Bot
 from pprint import pprint
 
-PAGE_ACCESS_TOKEN = "EAADdZApZBKIQMBACd3sGBnANKn42PCdQiYyzBdi3BEjkZANCfVeoq5ZAZALFJgXCWAZCZBz4m5b9NMMGp8HUtRkbZCK1PohEFJHxrv6OBHV7NqJg3AZBTuJ7LvrJzsbZBmxQ8ZB96W8LcktJC1YHphUXVDMNrwPxYotxsb1ZB7rFrS3ZBlQZDZD"
-APP_SECRET_TOKEN = "16bcb9d11ee40f52876e656b022b03cf"
-
+PAGE_ACCESS_TOKEN = config.PAGE_ACCESS_TOKEN
+APP_SECRET_TOKEN = config.APP_SECRET_TOKEN
 app = Flask(__name__)
-bot = Bot(PAGE_ACCESS_TOKEN, app_secret = APP_SECRET_TOKEN)
+bot = Bot(PAGE_ACCESS_TOKEN, app_secret=APP_SECRET_TOKEN)
+
 
 @app.route('/auth', methods=['GET'])
 def webhook_auth():
@@ -17,25 +19,24 @@ def webhook_auth():
     return request.args["hub.challenge"], 200
   return "Hello world", 200
 
+
 @app.route('/auth', methods=['POST'])
 def process_messages():
   data = request.get_json()
   pprint(data)
-  try:
-    if data['object'] == 'page':
-      for entry in data['entry']:
-        for event in entry['messaging']:
-          sender_id = event['sender']['id']
-          recipient = event['recipient']['id']
+  if data['object'] == 'page':
+    for entry in data['entry']:
+      for event in entry['messaging']:
+        sender_id = event['sender']['id']
+        recipient = event['recipient']['id']
 
-        if event.get('message'):
-          response = event['message'].get('text', '') 
-          bot.send_text_message(sender_id, response)
-  except:
-    response = "Sorry, I don't understand what you mean"
-    bot.send_text_message(sender_id, response)
+      if event.get('message') and event['message'].get('text', '').lower() == "status":
+        print("Sending image")
+        img_path = "/home/pi/garage_monitor/saved_images/last_image.png"
+        bot.send_image(sender_id, img_path)
 
   return "ok", 200
 
+
 if __name__ == "__main__":
-  app.run(debug = True, port = 5000)
+  app.run(debug=True, port=5000)
