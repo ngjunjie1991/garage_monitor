@@ -29,7 +29,7 @@ if __name__ == '__main__':
       print("Door is", curr_door_state.name)
       prev_door_state = curr_door_state
       camera.release()
-      time.sleep(10)
+      time.sleep(4.5 * 60)
   except Exception as e:
     print('Fatal error')
     print(e)
