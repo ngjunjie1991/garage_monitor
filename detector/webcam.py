@@ -19,10 +19,8 @@ class Webcam:
 
 def test():
   cam = Webcam(1)
-  img = cam.getSnapshotCV()
-  cv2.imshow("image", img)
-  cv2.waitKey(0)
-  cam.release()
+  success, img = cam.getSnapshotCV()
+  cv2.imwrite("/home/pi/garage_monitor/saved_images/test.png", img)
 
 
-# test()
+test()

@@ -8,6 +8,7 @@ from detector import Webcam, ImageProcessor, GarageDoorDetectionState
 from chatbot import Butler
 
 if __name__ == '__main__':
+  door_open_time = time.time()
   prev_door_state = GarageDoorDetectionState.CLOSED
   try:
     alfred = Butler(config.BOT_EMAIL, config.BOT_PASSWORD, config.OUTPUTDIR)
@@ -19,12 +20,16 @@ if __name__ == '__main__':
       proc = ImageProcessor(config.THRESHOLD, config. SHAPES,
                             config.TEMPLATEDIR, config.OUTPUTDIR, config.HORIZ_ALIGN_THRESH)
       curr_door_state, detected_shapes = proc.detectGarageDoorState(img)
+
       if curr_door_state == GarageDoorDetectionState.OPEN and prev_door_state == GarageDoorDetectionState.OPEN:
-        alfred.closeGarageReminder()
+        alfred.closeGarageReminder(time.time() - door_open_time)
+      else:
+        door_open_time = time.time()
+
       print("Door is", curr_door_state.name)
       prev_door_state = curr_door_state
       camera.release()
-      time.sleep(4 * 60)
+      time.sleep(10)
   except Exception as e:
     print('Fatal error')
     print(e)
