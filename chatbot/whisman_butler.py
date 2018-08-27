@@ -17,7 +17,7 @@ class Butler(Client):
     self.markAsRead(thread_id)
 
     # If you're not the author, echo
-    if message_object.text.lower() == 'status':
+    if message_object.text and message_object.text.lower() == 'status':
       self.serviceStatusMessage(
           author_id, message_object, thread_id, thread_type)
 

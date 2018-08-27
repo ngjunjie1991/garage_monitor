@@ -23,4 +23,4 @@ def test():
   cv2.imwrite("/home/pi/garage_monitor/saved_images/test.png", img)
 
 
-test()
+# test()
