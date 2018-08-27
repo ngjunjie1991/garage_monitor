@@ -9,8 +9,9 @@ class Webcam:
     self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
   def getSnapshotCV(self):
-    _, frame = self.cap.read()
-    return frame
+    for i in range(100):
+      success, frame = self.cap.read()
+      return success, frame
 
   def release(self):
     self.cap.release()
