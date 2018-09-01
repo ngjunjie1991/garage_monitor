@@ -5,6 +5,7 @@ from datetime import timedelta
 import logging
 import cv2
 import config
+import time
 
 
 class Butler(Client):
@@ -15,16 +16,15 @@ class Butler(Client):
   def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
     self.markAsDelivered(thread_id, message_object.uid)
     self.markAsRead(thread_id)
-
-    # If you're not the author, echo
-    if message_object.text and message_object.text.lower() == 'status':
+    if message_object.text and (message_object.text.lower() == 'status' or message_object.text == u"\U0001F697"):
       self.serviceStatusMessage(
           author_id, message_object, thread_id, thread_type)
 
   def serviceStatusMessage(self, author_id, message_object, thread_id, thread_type):
     camera = Webcam(1)
-    success = False
-    success, img = camera.getSnapshotCV()
+    start_time = time.time()
+    while (time.time() - start_time) < 3.0:
+      success, img = camera.getSnapshotCV()
     camera.release()
     if not success:
       return
@@ -33,7 +33,7 @@ class Butler(Client):
     proc = ImageProcessor(config.THRESHOLD, config. SHAPES,
                           config.TEMPLATEDIR, config.OUTPUTDIR, config.HORIZ_ALIGN_THRESH)
     curr_door_state, _ = proc.detectGarageDoorState(img)
-    msg_txt = "Garage door is " + curr_door_state.name
+    msg_txt = "Garage door is " + curr_door_state.name + ' at ' + time.asctime()
     self.sendLocalImage(path_to_img,
                         message=Message(text=msg_txt), thread_id=thread_id, thread_type=thread_type)
 
@@ -43,7 +43,7 @@ class Butler(Client):
         '. Chippie feels cold please close the FUCKING GARAGE.'
     img_to_send = self.createScaryImage()
     msg_id = self.sendLocalImage(img_to_send, message=Message(
-        text=msg_txt), thread_id=config.GROUP_CHAT_ID, thread_type=ThreadType.GROUP)
+        text=msg_txt), thread_id=config.JJ_ID, thread_type=ThreadType.USER)
     print("sent message id:", msg_id)
     self.reactToMessage(msg_id, MessageReaction.ANGRY)
 

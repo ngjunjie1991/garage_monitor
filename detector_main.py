@@ -13,8 +13,11 @@ if __name__ == '__main__':
   try:
     alfred = Butler(config.BOT_EMAIL, config.BOT_PASSWORD, config.OUTPUTDIR)
     while True:
-      camera = Webcam(0)
-      success, img = camera.getSnapshotCV()
+      camera = Webcam(1)
+      start_time = time.time()
+      while (time.time() - start_time) < 3.0:
+        success, img = camera.getSnapshotCV()
+      camera.release()
       if not success:
         continue
       proc = ImageProcessor(config.THRESHOLD, config. SHAPES,
@@ -28,7 +31,6 @@ if __name__ == '__main__':
 
       print("Door is", curr_door_state.name)
       prev_door_state = curr_door_state
-      camera.release()
       time.sleep(4.5 * 60)
   except Exception as e:
     print('Fatal error')
