@@ -45,9 +45,11 @@ class Butler(Client):
         str(timedelta(seconds=int(elapsed))) + \
         '. Chippie feels cold please close the FUCKING GARAGE.'
     img_to_send = self.createScaryImage()
+    self.send(Message(text=msg_txt), thread_id=config.JJ_ID,
+              thread_type=ThreadType.USER)
     try:
-      msg_id = self.sendLocalImage(img_to_send, message=Message(
-          text=msg_txt), thread_id=config.JJ_ID, thread_type=ThreadType.USER)
+      msg_id = self.sendLocalImage(
+          img_to_send, thread_id=config.JJ_ID, thread_type=ThreadType.USER)
       print("sent message id:", msg_id)
       self.reactToMessage(msg_id, MessageReaction.ANGRY)
     except (FBchatException, e):
